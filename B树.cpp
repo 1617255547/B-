@@ -1,4 +1,4 @@
-﻿#include"BTree.h"
+#include"BTree.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
@@ -175,7 +175,7 @@ void Successor(BTNode* p, int i) {
 		return;
 	}
 	BTree q;
-	for (q = p->ptr[i]; q->ptr[0]; q = q->ptr[0]);
+	for (q = p->ptr[i]; q->ptr[0]!=NULL; q = q->ptr[0]);
 	p->key[i] = q->key[1];//复制关键字
 	return;
 }
@@ -189,13 +189,14 @@ void MoveRight(BTNode* p, int i) {
 	BTree aq = p->ptr[i - 1], q = p->ptr[i];
 	for (int j = q->Keynum; j > 0; j--) {/*将双亲结点p的最后一个关键字移入右结点q，腾出位置*/
 		q->key[j + 1] = q->key[j];
-		q->ptr[j + 1] = p->ptr[j];
+		q->ptr[j + 1] = q->ptr[j];
 	}
 	q->key[1] = p->key[i];
-	q->ptr[1] = p->ptr[0];
+	q->ptr[1] = q->ptr[0];
 	p->key[i] = aq->key[aq->Keynum]; /*将左结点aq最后一个关键字移入双亲结点p*/
 	q->ptr[0] = aq->ptr[aq->Keynum];/*最后一个孩子指针给右结点开始*/
 	aq->Keynum--;
+	q->Keynum++;
 	return;
 }
 
@@ -217,7 +218,7 @@ void MoveLeft(BTNode* p, int i) {
 
 
 //将双亲p、右结点q合并入左结点aq，并调整p剩余关键字的位置
-void Combine(BTNode* p, int i) {
+void Combine(BTNode* &p, int i) {
 	if (p == NULL) {
 		printf("该操作结点为空，合并错误\n");
 		return;
@@ -234,27 +235,23 @@ void Combine(BTNode* p, int i) {
 	aq->Keynum = num;
 	Remove(p, i);//删掉p的第i个key
 	free(q);//释放空间
-	if (p->parent == NULL && p->Keynum == 0) {/*如果为头结点且删完关键字了，则也将头结点删掉*/
-		q = p;
-		p = p->ptr[0];
-		p->parent = NULL;
-		free(q);
-	}
-	else if (p->Keynum < min)//检查自身关键字数目是否合规
+
+	if (p->parent != NULL && p->Keynum < min)//检查自身关键字数目是否合规
 		Restore(p, i);
 	return;
 }
 
 //调整B树
-void Restore(BTree p, int i) {//本是p结点关键字不符合要求
+void Restore(BTree &p, int i) {//本是p结点关键字不符合要求
 	if (p == NULL) {
 		printf("该结点为空，调整错误\n");
 		return;
 	}
 	if (p->parent == NULL)return;
-	int j;
+	int j=0;
 	BTree q = p->parent;//先找其父母
-	for (j = 0; q->ptr[j] != p; j++);//找出p是q的第几个孩子
+	while (q->ptr[j] != p)
+		j++;//找出p是q的第几个孩子
 	if (j == 0) {/*如果是第一个，则先右借，不够则根节点关键字和右孩子关键字合并到左孩子*/
 		if (q->ptr[1]->Keynum > min)
 			MoveLeft(q, 1);
@@ -274,7 +271,7 @@ void Restore(BTree p, int i) {//本是p结点关键字不符合要求
 }
 
 //在p查找并删除k
-void BTNodeDelete(BTNode* p, KeyType k) {
+void BTNodeDelete(BTNode* &p, KeyType k) {
 	if (p == NULL) {
 		printf("该结点为空，无法删除\n");
 		return;
@@ -285,12 +282,18 @@ void BTNodeDelete(BTNode* p, KeyType k) {
 	if (r.tag) {
 		p = r.pt;
 		i = r.i;
-		if (p->ptr[i - 1]) {/*非叶子结点删除则在右子树选择最小值替代，然后转化为叶子结点删除*/
+		if (p->ptr[i]) {/*非叶子结点删除则在右子树选择最小值替代，然后转化为叶子结点删除*/
 			Successor(p, i);
 			BTNodeDelete(p->ptr[i], p->key[i]);
+			if (p->parent == NULL && p->Keynum == 0) {/*如果为头结点且删完关键字了，则也将头结点删掉*/
+				BTree q = p;
+				p = p->ptr[0];
+				p->parent = NULL;
+				free(q);
+			}
 		}
 		else Remove(p, i);//叶子结点先删
-		if (p->Keynum < min) {//关键字太少则调整
+		if (p->parent!=NULL && p->Keynum < min) {//关键字太少则调整
 			Restore(p, i);
 		}
 	}
@@ -490,7 +493,7 @@ void Test() {
 			int l;
 			printf("请确认是否释放该B树，返回请输入‘1’\n");
 			scanf_s("%d", &l);
-			if (l ==1)break;
+			if (l == 1)break;
 			DestroyBTree(bt);
 			printf("\n删除释放完成\n");
 			break;
