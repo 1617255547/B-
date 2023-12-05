@@ -48,7 +48,7 @@ result SearchBTree(BTree bt, KeyType k) {
 			Tag = 1;
 		else {
 			q = p;
-			p = p->ptr[i-1];/*否则进入孩子结点查找，注意，是i的原因是查找函数就是查看i+1的关键字，所有返回的直接就是该孩子结点的下标*/
+			p = p->ptr[i-1];/*否则进入孩子结点查找*/
 		}
 	}
 	if (Tag) {
@@ -64,7 +64,7 @@ result SearchBTree(BTree bt, KeyType k) {
 	return r;
 }
 
-/*将关键字k和结点q分别插入到p->key[i]和p->ptr[i]中*/
+/*将关键字k和结点q分别插入到p->key[i-1]和p->ptr[i]中*/
 void InsertBTNode(BTNode*& p, int i, KeyType k, BTNode* q) {
 	if (p == NULL) {
 		printf("该结点为空，无法插入\n");
