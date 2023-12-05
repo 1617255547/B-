@@ -24,8 +24,8 @@ int SearchBTNode(BTNode* p, KeyType k) {
 		printf("输入结点为空，查找错误位置\n");
 		return 0;
 	}
-	int i = 0;
-	while (i < p->Keynum && k >= p->key[i + 1])
+	int i = 1;
+	while (i <= p->Keynum && k > p->key[i])
 		i++;
 	return i;
 }
@@ -48,7 +48,7 @@ result SearchBTree(BTree bt, KeyType k) {
 			Tag = 1;
 		else {
 			q = p;
-			p = p->ptr[i];/*否则进入孩子结点查找，注意，是i的原因是查找函数就是查看i+1的关键字，所有返回的直接就是该孩子结点的下标*/
+			p = p->ptr[i-1];/*否则进入孩子结点查找，注意，是i的原因是查找函数就是查看i+1的关键字，所有返回的直接就是该孩子结点的下标*/
 		}
 	}
 	if (Tag) {
@@ -64,19 +64,19 @@ result SearchBTree(BTree bt, KeyType k) {
 	return r;
 }
 
-/*将关键字k和结点q分别插入到p->key[i+1]和p->ptr[i+1]中，因为返回的插入位置i-1，所有插入i+1才对*/
+/*将关键字k和结点q分别插入到p->key[i]和p->ptr[i]中*/
 void InsertBTNode(BTNode*& p, int i, KeyType k, BTNode* q) {
 	if (p == NULL) {
 		printf("该结点为空，无法插入\n");
 		return;
 	}
 	int j;
-	for (j = p->Keynum; j > i; j--) {//i+1后所有元素往后移
+	for (j = p->Keynum; j >= i; j--) {//i+1后所有元素往后移
 		p->key[j + 1] = p->key[j];
 		p->ptr[j + 1] = p->ptr[j];
 	}
-	p->key[i + 1] = k;
-	p->ptr[i + 1] = q;
+	p->key[i] = k;
+	p->ptr[i] = q;
 	p->Keynum++;//关键字数+1
 	if (q != NULL)q->parent = p;//修改父母结点的值
 	return;
@@ -93,16 +93,17 @@ void SplitBTNode(BTNode*& p, int s, BTNode*& q) {
 		BTree q;
 	q = (BTree)malloc(sizeof(BTNode));//开空间
 	q->ptr[0] = p->ptr[s];//为了一致性先赋值
-	for (i = s + 1; i <= m; i++) {//后半部分放进q
+	for (i = s + 1; i <= p->Keynum; i++) {//后半部分放进q
 		q->key[i - s] = p->key[i];
 		q->ptr[i - s] = p->ptr[i];
 	}
+	q->Keynum = p->Keynum - s;//修改关键字数
+	q->parent = p->parent;
 	for (i = 0; i <= p->Keynum - s; i++) {/*修改后半部分的父母值*/
 		if (q->ptr[i])
 			q->ptr[i]->parent = q;
 	}
-	q->Keynum = p->Keynum - s;//修改关键字数
-	q->parent = p->parent;
+
 	p->Keynum = s - 1;
 	return;
 }
@@ -123,7 +124,7 @@ void NewRoot(BTNode*& bt, KeyType k, BTNode* p, BTNode* q) {
 	return;
 }
 
-/*在树bt的结点q的key[i]和key[i+1]插入k，若引起结点过大，则沿双亲分裂*/
+/*在树bt的结点p的key[i]和key[i+1]插入k，若引起结点过大，则沿双亲分裂*/
 void InsertBTree(BTree& bt, int i, KeyType k, BTree p) {
 	if (bt == NULL) {
 		printf("头结点为空，插入错误\n");
@@ -145,7 +146,7 @@ void InsertBTree(BTree& bt, int i, KeyType k, BTree p) {
 			s = (m + 1) / 2;//前半原置，后半新设，中间上移
 			SplitBTNode(p, s, q);//分裂
 			x = p->key[s];//存上移关键字
-			if (p->parent) {//查找上移的位序
+			if (p->parent!=NULL) {//查找上移的位序
 				p = p->parent;
 				i = SearchBTNode(p, x);
 			}
@@ -218,7 +219,7 @@ void MoveLeft(BTNode* p, int i) {
 
 
 //将双亲p、右结点q合并入左结点aq，并调整p剩余关键字的位置
-void Combine(BTNode* &p, int i) {
+void Combine(BTNode* p, int i) {
 	if (p == NULL) {
 		printf("该操作结点为空，合并错误\n");
 		return;
@@ -242,7 +243,7 @@ void Combine(BTNode* &p, int i) {
 }
 
 //调整B树
-void Restore(BTree &p, int i) {//本是p结点关键字不符合要求
+void Restore(BTree p, int i) {//本是p结点关键字不符合要求
 	if (p == NULL) {
 		printf("该结点为空，调整错误\n");
 		return;
@@ -285,14 +286,14 @@ void BTNodeDelete(BTNode* &p, KeyType k) {
 		if (p->ptr[i]) {/*非叶子结点删除则在右子树选择最小值替代，然后转化为叶子结点删除*/
 			Successor(p, i);
 			BTNodeDelete(p->ptr[i], p->key[i]);
-			if (p->parent == NULL && p->Keynum == 0) {/*如果为头结点且删完关键字了，则也将头结点删掉*/
-				BTree q = p;
-				p = p->ptr[0];
-				p->parent = NULL;
-				free(q);
-			}
 		}
 		else Remove(p, i);//叶子结点先删
+		if (p->parent == NULL && p->Keynum == 0) {/*如果为头结点且删完关键字了，则也将头结点删掉*/
+			BTree q = p;
+			p = p->ptr[0];
+			p->parent = NULL;
+			free(q);
+		}
 		if (p->parent!=NULL && p->Keynum < min) {//关键字太少则调整
 			Restore(p, i);
 		}
@@ -444,7 +445,7 @@ void Test() {
 	srand(time(NULL));
 	for (int index = 0; index < i; index++) {
 		Key[index] = rand() % j;
-		//printf("%d ", Key[index]);
+		printf("%d ", Key[index]);
 	}
 	printf("\n将创建 %d 阶B树\n", m);
 	for (j = 0; j < i; j++) {
@@ -456,6 +457,9 @@ void Test() {
 	printf("\n已经完成插入\n");
 	PrintBTree(bt);
 	while (1) {
+		printf("\n此时的B树\n");
+		while (bt->parent != NULL)bt = bt->parent;//实时更新最新的根节点
+		PrintBTree(bt);
 		printf("\n=============请输入你需要的操作=============\n");
 		printf("  1.初始化     2.插入    3.删除    \n");
 		printf("  4.清空释放   5.输出B树 6.查找节点 \n");
@@ -482,7 +486,6 @@ void Test() {
 			break;
 		}
 		case 3: {
-			PrintBTree(bt);
 			printf("输入所需删除的关键字:_____\b\b\b");
 			scanf_s("%d", &k);
 			BTNodeDelete(bt, k);
@@ -509,7 +512,7 @@ void Test() {
 			break;
 		}
 		case 7: {
-			exit(0);
+			exit(-1);
 			break;
 		}
 		}
