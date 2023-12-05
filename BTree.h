@@ -60,9 +60,9 @@ void MoveRight(BTNode* p, int i);							 //将双亲结点p的最后一个关键
 
 void MoveLeft(BTNode* p, int i);							 //将双亲结点p的第一个关键字移入左结点aq，将结点q的第一个关键字移入p
 
-void Combine(BTNode* &p, int i);							  //将双亲p、右结点q合并入左结点aq，并调整p剩余关键字的位置
+void Combine(BTNode* p, int i);							  //将双亲p、右结点q合并入左结点aq，并调整p剩余关键字的位置
 
-void Restore(BTNode* &p, int i);						     //删除p中第i个关键字后，调整B树
+void Restore(BTNode* p, int i);						     //删除p中第i个关键字后，调整B树
 
 void BTNodeDelete(BTNode* &p, KeyType k);					 //在p查找并删除k
 
