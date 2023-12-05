@@ -1,28 +1,28 @@
 #pragma once
-#ifndef _BTREE_H//±ÜÃâÖØ¸´¶¨Òå£¬¶ÔÓÚ±¾´Î½Ó¿Ú¿ÉÓĞ¿ÉÎŞ£¬Ö÷ÒªÓÃÓÚ¶à¸öÔ´ÎÄ¼ş°üº¬Í·ÎÄ¼şµÄÇé¿ö£¬Óï·¨ÎªÈç¹ûÎ´¶¨ÒåÔòÔËĞĞÒÔÏÂ²Ù×÷
+#ifndef _BTREE_H//é¿å…é‡å¤å®šä¹‰ï¼Œå¯¹äºæœ¬æ¬¡æ¥å£å¯æœ‰å¯æ— ï¼Œä¸»è¦ç”¨äºå¤šä¸ªæºæ–‡ä»¶åŒ…å«å¤´æ–‡ä»¶çš„æƒ…å†µï¼Œè¯­æ³•ä¸ºå¦‚æœæœªå®šä¹‰åˆ™è¿è¡Œä»¥ä¸‹æ“ä½œ
 #define _BTREE_H
 
-const int m = 5;	//¶¨ÒåBÊ÷½×Êı£¬¿ÉÒÔÈÎÒâ¸ü»»
-const int max = m - 1;  //½Úµã×î´ó¹Ø¼ü×ÖÊı
-const int min = (m - 1) / 2;//½Úµã×îĞ¡¹Ø¼ü×ÖÊı
-typedef int KeyType;      //Éè¶¨¹Ø¼ü×ÖÀàĞÍ
+const int m = 5;	//å®šä¹‰Bæ ‘é˜¶æ•°ï¼Œå¯ä»¥ä»»æ„æ›´æ¢
+const int max = m - 1;  //èŠ‚ç‚¹æœ€å¤§å…³é”®å­—æ•°
+const int min = (m - 1) / 2;//èŠ‚ç‚¹æœ€å°å…³é”®å­—æ•°
+typedef int KeyType;      //è®¾å®šå…³é”®å­—ç±»å‹
 
-//ĞèÒªµÄ³éÏóÊı¾İÀàĞÍ
+//éœ€è¦çš„æŠ½è±¡æ•°æ®ç±»å‹
 typedef struct BTNode {
-	int Keynum;				//½áµãµ±Ç°µÄ¹Ø¼ü×ÖÊı
-	KeyType key[m + 1];		//¹Ø¼ü×ÖÊı×é£¬key[0]Î´ÓÃ
-	struct BTNode* parent;  //Ë«Ç×½áµãÖ¸Õë
-	struct BTNode* ptr[m + 1];//º¢×Ó½áµãÖ¸ÕëÊı×é
-}BTNode, * BTree;				  //½áµã¼°Ö¸ÕëÀàĞÍ
+	int Keynum;				//ç»“ç‚¹å½“å‰çš„å…³é”®å­—æ•°
+	KeyType key[m + 1];		//å…³é”®å­—æ•°ç»„ï¼Œkey[0]æœªç”¨
+	struct BTNode* parent;  //åŒäº²ç»“ç‚¹æŒ‡é’ˆ
+	struct BTNode* ptr[m + 1];//å­©å­ç»“ç‚¹æŒ‡é’ˆæ•°ç»„
+}BTNode, * BTree;				  //ç»“ç‚¹åŠæŒ‡é’ˆç±»å‹
 
-typedef struct {//BÊ÷µÄ²éÕÒ½á¹ûÀàĞÍ
-	BTree pt;	//Ö¸ÏòÕÒµ½µÄ½Úµã
-	int i;		//1<=i<=m£¬ÔÚ½áµãÖĞµÄ¹Ø¼ü×ÖÎ»Ğò
-	int tag;	//1±íÊ¾²éÕÒ³É¹¦£¬0£¬²éÕÒÊ§°Ü
+typedef struct {//Bæ ‘çš„æŸ¥æ‰¾ç»“æœç±»å‹
+	BTree pt;	//æŒ‡å‘æ‰¾åˆ°çš„èŠ‚ç‚¹
+	int i;		//1<=i<=mï¼Œåœ¨ç»“ç‚¹ä¸­çš„å…³é”®å­—ä½åº
+	int tag;	//1è¡¨ç¤ºæŸ¥æ‰¾æˆåŠŸï¼Œ0ï¼ŒæŸ¥æ‰¾å¤±è´¥
 }result;
 
 
-typedef enum status {	//Ã¶¾ÙÀàĞÍ£¨µİÔö£©·µ»ØÀàĞÍ£¬¿ÉÓĞ¿ÉÎŞ°É£¬µ±Ç°ÓÃ²»ÉÏ
+typedef enum status {	//æšä¸¾ç±»å‹ï¼ˆé€’å¢ï¼‰è¿”å›ç±»å‹ï¼Œå¯æœ‰å¯æ— å§ï¼Œå½“å‰ç”¨ä¸ä¸Š
 	TRUE = 1,
 	FALSE,
 	OK,
@@ -31,61 +31,61 @@ typedef enum status {	//Ã¶¾ÙÀàĞÍ£¨µİÔö£©·µ»ØÀàĞÍ£¬¿ÉÓĞ¿ÉÎŞ°É£¬µ±Ç°ÓÃ²»ÉÏ
 	EMPTY
 }Status;
 
-typedef struct LNode {               //Á´±íºÍÁ´±í½áµãÀàĞÍ 
-	BTree data;                     //Êı¾İÓò
-	struct LNode* next;             //Ö¸ÕëÓò
+typedef struct LNode {               //é“¾è¡¨å’Œé“¾è¡¨ç»“ç‚¹ç±»å‹ 
+	BTree data;                     //æ•°æ®åŸŸ
+	struct LNode* next;             //æŒ‡é’ˆåŸŸ
 }LNode, * LinkList;
 
-//ÉùÃ÷µÄº¯ÊıÌå
-Status InitBTree(BTree& bt);						//³õÊ¼»¯BÊ÷
+//å£°æ˜çš„å‡½æ•°ä½“
+Status InitBTree(BTree& bt);						//åˆå§‹åŒ–Bæ ‘
 
-int SearchBTNode(BTNode* p, KeyType k);				//ÔÚ½áµãpÖĞ²éÕÒ¹Ø¼ü×ÖkµÄ²åÈëÎ»ÖÃi
+int SearchBTNode(BTNode* p, KeyType k);				//åœ¨ç»“ç‚¹pä¸­æŸ¥æ‰¾å…³é”®å­—kçš„æ’å…¥ä½ç½®i
 
-result SearchBTree(BTree bt, KeyType k);			/*ÔÚÊ÷tÉÏ²éÕÒ¹Ø¼ü×Ök,·µ»Ø½á¹û(pt,i,tag)¡£Èô²éÕÒ³É¹¦,ÔòÌØÕ÷Öµ
-													 tag=1,¹Ø¼ü×ÖkÊÇÖ¸ÕëptËùÖ¸½áµãÖĞµÚi¸ö¹Ø¼ü×Ö;·ñÔòÌØÕ÷Öµtag=0,
-													 ¹Ø¼ü×ÖkµÄ²åÈëÎ»ÖÃÎªpt½áµãµÄµÚi¸ö*/
-void InsertBTNode(BTNode*& p, int i, KeyType k, BTNode* q);//½«¹Ø¼ü×ÖkºÍ½áµãq·Ö±ğ²åÈëµ½p->key[i+1]ºÍp->ptr[i+1]ÖĞ
+result SearchBTree(BTree bt, KeyType k);			/*åœ¨æ ‘tä¸ŠæŸ¥æ‰¾å…³é”®å­—k,è¿”å›ç»“æœ(pt,i,tag)ã€‚è‹¥æŸ¥æ‰¾æˆåŠŸ,åˆ™ç‰¹å¾å€¼
+													 tag=1,å…³é”®å­—kæ˜¯æŒ‡é’ˆptæ‰€æŒ‡ç»“ç‚¹ä¸­ç¬¬iä¸ªå…³é”®å­—;å¦åˆ™ç‰¹å¾å€¼tag=0,
+													 å…³é”®å­—kçš„æ’å…¥ä½ç½®ä¸ºptç»“ç‚¹çš„ç¬¬iä¸ª*/
+void InsertBTNode(BTNode*& p, int i, KeyType k, BTNode* q);//å°†å…³é”®å­—kå’Œç»“ç‚¹qåˆ†åˆ«æ’å…¥åˆ°p->key[i+1]å’Œp->ptr[i+1]ä¸­
 
-void SplitBTNode(BTNode*& p, int s, BTNode*& q);					 //½«p½áµã·ÖÁÑ³ÉÁ½¸ö½áµã£¬Ç°Ò»°ë±£Áô£¬ºóÒ»°ëÒÆÈë½áµãq
+void SplitBTNode(BTNode*& p, int s, BTNode*& q);					 //å°†pç»“ç‚¹åˆ†è£‚æˆä¸¤ä¸ªç»“ç‚¹ï¼Œå‰ä¸€åŠä¿ç•™ï¼Œåä¸€åŠç§»å…¥ç»“ç‚¹q
 
-void NewRoot(BTNode*& bt, KeyType k, BTNode* p, BTNode* q);    //Éú³ÉĞÂµÄ½áµãbt£¬Ô­½áµãpºÍqÎª×ÓÊ÷Ö¸Õë
+void NewRoot(BTNode*& bt, KeyType k, BTNode* p, BTNode* q);    //ç”Ÿæˆæ–°çš„ç»“ç‚¹btï¼ŒåŸç»“ç‚¹på’Œqä¸ºå­æ ‘æŒ‡é’ˆ
 
-void InsertBTree(BTree& bt, int i, KeyType k, BTNode* p);   //ÔÚÊ÷btµÄ½áµãqµÄkey[i]ºÍkey[i+1]²åÈëk£¬ÈôÒıÆğ½áµã¹ı´ó£¬ÔòÑØË«Ç×·ÖÁÑ
+void InsertBTree(BTree& bt, int i, KeyType k, BTNode* p);   //åœ¨æ ‘btçš„ç»“ç‚¹qçš„key[i]å’Œkey[i+1]æ’å…¥kï¼Œè‹¥å¼•èµ·ç»“ç‚¹è¿‡å¤§ï¼Œåˆ™æ²¿åŒäº²åˆ†è£‚
 
-void Remove(BTNode* p, int i);							 //´Ó½áµãpÉ¾³ıkey[i]ºÍËüµÄº¢×ÓÖ¸Õëptr[i]
+void Remove(BTNode* p, int i);							 //ä»ç»“ç‚¹påˆ é™¤key[i]å’Œå®ƒçš„å­©å­æŒ‡é’ˆptr[i]
 
-void Successor(BTNode* p, int i);						 //	²éÕÒ±»É¾¹Ø¼ü×Öp->key[i](ÔÚ·ÇÒ¶×Ó½áµãÖĞ)µÄÌæ´úÒ¶×Ó½áµã£¨ÓÒ×ÓÊ÷Öµ×îĞ¡µÄ¹Ø¼ü×Ö£©
+void Successor(BTNode* p, int i);						 //	æŸ¥æ‰¾è¢«åˆ å…³é”®å­—p->key[i](åœ¨éå¶å­ç»“ç‚¹ä¸­)çš„æ›¿ä»£å¶å­ç»“ç‚¹ï¼ˆå³å­æ ‘å€¼æœ€å°çš„å…³é”®å­—ï¼‰
 
-void MoveRight(BTNode* p, int i);							 //½«Ë«Ç×½áµãpµÄ×îºóÒ»¸ö¹Ø¼ü×ÖÒÆÈëÓÒ½áµãq£¬½«×ó½áµãaq×îºóÒ»¸ö¹Ø¼ü×ÖÒÆÈëË«Ç×½áµãp
+void MoveRight(BTNode* p, int i);							 //å°†åŒäº²ç»“ç‚¹pçš„æœ€åä¸€ä¸ªå…³é”®å­—ç§»å…¥å³ç»“ç‚¹qï¼Œå°†å·¦ç»“ç‚¹aqæœ€åä¸€ä¸ªå…³é”®å­—ç§»å…¥åŒäº²ç»“ç‚¹p
 
-void MoveLeft(BTNode* p, int i);							 //½«Ë«Ç×½áµãpµÄµÚÒ»¸ö¹Ø¼ü×ÖÒÆÈë×ó½áµãaq£¬½«½áµãqµÄµÚÒ»¸ö¹Ø¼ü×ÖÒÆÈëp
+void MoveLeft(BTNode* p, int i);							 //å°†åŒäº²ç»“ç‚¹pçš„ç¬¬ä¸€ä¸ªå…³é”®å­—ç§»å…¥å·¦ç»“ç‚¹aqï¼Œå°†ç»“ç‚¹qçš„ç¬¬ä¸€ä¸ªå…³é”®å­—ç§»å…¥p
 
-void Combine(BTNode* p, int i);							  //½«Ë«Ç×p¡¢ÓÒ½áµãqºÏ²¢Èë×ó½áµãaq£¬²¢µ÷ÕûpÊ£Óà¹Ø¼ü×ÖµÄÎ»ÖÃ
+void Combine(BTNode* p, int i);							  //å°†åŒäº²pã€å³ç»“ç‚¹qåˆå¹¶å…¥å·¦ç»“ç‚¹aqï¼Œå¹¶è°ƒæ•´på‰©ä½™å…³é”®å­—çš„ä½ç½®
 
-void Restore(BTNode* p, int i);						     //É¾³ıpÖĞµÚi¸ö¹Ø¼ü×Öºó£¬µ÷ÕûBÊ÷
+void Restore(BTNode* p, int i);						     //åˆ é™¤pä¸­ç¬¬iä¸ªå…³é”®å­—åï¼Œè°ƒæ•´Bæ ‘
 
-void BTNodeDelete(BTNode* p, KeyType k);					 //ÔÚp²éÕÒ²¢É¾³ık
+void BTNodeDelete(BTNode* p, KeyType k);					 //åœ¨pæŸ¥æ‰¾å¹¶åˆ é™¤k
 
-void DestroyBTree(BTree& bt);							 //µİ¹éÊÍ·ÅBÊ÷
+void DestroyBTree(BTree& bt);							 //é€’å½’é‡Šæ”¾Bæ ‘
 
-void FindBTNode(BTree& bt, KeyType k);								//²éÕÒ½ÚµãÊÇ·ñ´æÔÚ
+void FindBTNode(BTree& bt, KeyType k);								//æŸ¥æ‰¾èŠ‚ç‚¹æ˜¯å¦å­˜åœ¨
 
-Status InitQueue(LinkList& L);							 //³õÊ¼»¯¶ÓÁĞ 
+Status InitQueue(LinkList& L);							 //åˆå§‹åŒ–é˜Ÿåˆ— 
 
-LNode* CreateNode(BTree bt);							 //ĞÂ½¨Ò»¸ö½áµã 
+LNode* CreateNode(BTree bt);							 //æ–°å»ºä¸€ä¸ªç»“ç‚¹ 
 
-Status Enqueue(LNode* p, BTree bt);						 //ÔªËØqÈë¶ÓÁĞ
+Status Enqueue(LNode* p, BTree bt);						 //å…ƒç´ qå…¥é˜Ÿåˆ—
 
-Status Dequeue(LNode* p, BTNode*& q);					 //³ö¶ÓÁĞ£¬²¢ÒÔq·µ»ØÖµ
+Status Dequeue(LNode* p, BTNode*& q);					 //å‡ºé˜Ÿåˆ—ï¼Œå¹¶ä»¥qè¿”å›å€¼
 
-Status IfEmpty(LinkList L);								 //¶ÓÁĞÅĞ¿Õ 
+Status IfEmpty(LinkList L);								 //é˜Ÿåˆ—åˆ¤ç©º 
 
-void DestroyQueue(LinkList L);							 //Ïú»Ù¶ÓÁĞ
+void DestroyQueue(LinkList L);							 //é”€æ¯é˜Ÿåˆ—
 
-Status Traverse(BTree t, LinkList L, int newline, int sum);//ÓÃ¶ÓÁĞ±éÀúÊä³öBÊ÷ 
+Status Traverse(BTree t, LinkList L, int newline, int sum);//ç”¨é˜Ÿåˆ—éå†è¾“å‡ºBæ ‘ 
 
-Status PrintBTree(BTree t);								 //Êä³öBÊ÷ 
+Status PrintBTree(BTree t);								 //è¾“å‡ºBæ ‘ 
 
-void Test();											 //²âÊÔBÊ÷¹¦ÄÜº¯Êı
+void Test();											 //æµ‹è¯•Bæ ‘åŠŸèƒ½å‡½æ•°
 
 #endif 
