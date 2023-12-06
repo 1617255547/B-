@@ -2,7 +2,7 @@
 #ifndef _BTREE_H//避免重复定义，对于本次接口可有可无，主要用于多个源文件包含头文件的情况，语法为如果未定义则运行以下操作
 #define _BTREE_H
 
-const int m = 3;	//定义B树阶数，可以任意更换
+const int m = 5;	//定义B树阶数，可以任意更换
 const int max = m - 1;  //节点最大关键字数
 const int min = (m - 1) / 2;//节点最小关键字数
 const int inf = -10000;
