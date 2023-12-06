@@ -2,9 +2,10 @@
 #ifndef _BTREE_H//避免重复定义，对于本次接口可有可无，主要用于多个源文件包含头文件的情况，语法为如果未定义则运行以下操作
 #define _BTREE_H
 
-const int m = 5;	//定义B树阶数，可以任意更换
+const int m = 3;	//定义B树阶数，可以任意更换
 const int max = m - 1;  //节点最大关键字数
 const int min = (m - 1) / 2;//节点最小关键字数
+const int inf = -10000;
 typedef int KeyType;      //设定关键字类型
 
 //需要的抽象数据类型
@@ -64,7 +65,9 @@ void Combine(BTNode* p, int i);							  //将双亲p、右结点q合并入左结
 
 void Restore(BTNode* p, int i);						     //删除p中第i个关键字后，调整B树
 
-void BTNodeDelete(BTNode* &p, KeyType k);					 //在p查找并删除k
+void BTNodeDelete(BTNode* p, KeyType k);					 //在p查找并删除k
+
+void BTreeDelete(BTNode*& bt, KeyType k);//删除框架，保护根节点，修bug补全
 
 void DestroyBTree(BTree& bt);							 //递归释放B树
 
@@ -82,9 +85,11 @@ Status IfEmpty(LinkList L);								 //队列判空
 
 void DestroyQueue(LinkList L);							 //销毁队列
 
-Status Traverse(BTree t, LinkList L, int newline, int sum);//用队列遍历输出B树 
+Status Traverse(BTree bt, LinkList L, int newline, int sum);//用队列遍历输出B树 
 
-Status PrintBTree(BTree t);								 //输出B树 
+Status PrintBTree(BTree bt);								 //输出B树
+
+void PrintfBTree(BTree bt, int deep);//凹入表形式
 
 void Test();											 //测试B树功能函数
 
