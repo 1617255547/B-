@@ -530,7 +530,6 @@ void Test() {
 		}
 		case 5: {
 			PrintBTree(bt);
-			PrintfBTree(bt,1);
 			break;
 		}
 		case 6: {
