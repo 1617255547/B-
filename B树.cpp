@@ -12,7 +12,7 @@ Status InitBTree(BTree& bt) {
 	bt->parent = NULL;
 	bt->ptr[0] = NULL;
 	for (int i = 1; i < m; i++) {
-		bt->key[i] = -10000;
+		bt->key[i] = inf;
 		bt->ptr[i] = NULL;
 	}
 	return OK;
@@ -48,7 +48,7 @@ result SearchBTree(BTree bt, KeyType k) {
 			Tag = 1;
 		else {
 			q = p;
-			p = p->ptr[i-1];/*否则进入孩子结点查找*/
+			p = p->ptr[i - 1];/*否则进入孩子结点查找*/
 		}
 	}
 	if (Tag) {
@@ -146,7 +146,7 @@ void InsertBTree(BTree& bt, int i, KeyType k, BTree p) {
 			s = (m + 1) / 2;//前半原置，后半新设，中间上移
 			SplitBTNode(p, s, q);//分裂
 			x = p->key[s];//存上移关键字
-			if (p->parent!=NULL) {//查找上移的位序
+			if (p->parent != NULL) {//查找上移的位序
 				p = p->parent;
 				i = SearchBTNode(p, x);
 			}
@@ -165,6 +165,8 @@ void Remove(BTNode* p, int i) {
 		p->key[j - 1] = p->key[j];
 		p->ptr[j - 1] = p->ptr[j];
 	}
+	p->key[p->Keynum] = inf;//删除防备
+	p->ptr[p->Keynum] = NULL;
 	p->Keynum--;
 	return;
 }
@@ -176,7 +178,7 @@ void Successor(BTNode* p, int i) {
 		return;
 	}
 	BTree q;
-	for (q = p->ptr[i]; q->ptr[0]!=NULL; q = q->ptr[0]);
+	for (q = p->ptr[i]; q->ptr[0] != NULL; q = q->ptr[0]);
 	p->key[i] = q->key[1];//复制关键字
 	return;
 }
@@ -236,7 +238,6 @@ void Combine(BTNode* p, int i) {
 	aq->Keynum = num;
 	Remove(p, i);//删掉p的第i个key
 	free(q);//释放空间
-
 	if (p->parent != NULL && p->Keynum < min)//检查自身关键字数目是否合规
 		Restore(p, i);
 	return;
@@ -249,7 +250,7 @@ void Restore(BTree p, int i) {//本是p结点关键字不符合要求
 		return;
 	}
 	if (p->parent == NULL)return;
-	int j=0;
+	int j = 0;
 	BTree q = p->parent;//先找其父母
 	while (q->ptr[j] != p)
 		j++;//找出p是q的第几个孩子
@@ -272,36 +273,40 @@ void Restore(BTree p, int i) {//本是p结点关键字不符合要求
 }
 
 //在p查找并删除k
-void BTNodeDelete(BTNode* &p, KeyType k) {
+void BTNodeDelete(BTNode* p, KeyType k) {
 	if (p == NULL) {
 		printf("该结点为空，无法删除\n");
 		return;
 	}
 	int i;
 	result r;
+	BTree q;
 	r = SearchBTree(p, k);//在树p中查找k
 	if (r.tag) {
-		p = r.pt;
+		q = r.pt;
 		i = r.i;
-		if (p->ptr[i]) {/*非叶子结点删除则在右子树选择最小值替代，然后转化为叶子结点删除*/
-			Successor(p, i);
-			BTNodeDelete(p->ptr[i], p->key[i]);
+		if (q->ptr[i]) {/*非叶子结点删除则在右子树选择最小值替代，然后转化为叶子结点删除*/
+			Successor(q, i);
+			BTNodeDelete(q->ptr[i], q->key[i]);
 		}
-		else Remove(p, i);//叶子结点先删
-		if (p->parent == NULL && p->Keynum == 0) {/*如果为头结点且删完关键字了，则也将头结点删掉*/
-			BTree q = p;
-			p = p->ptr[0];
-			p->parent = NULL;
-			free(q);
-		}
-		if (p->parent!=NULL && p->Keynum < min) {//关键字太少则调整
-			Restore(p, i);
+		else Remove(q, i);//叶子结点先删
+		if (q->parent != NULL && q->Keynum < min) {//关键字太少则调整
+			Restore(q, i);
 		}
 	}
 	else printf("\n抱歉，该数据已经删除或不存在\n");/*没找到输出返回*/
 	return;
 }
 
+//删除框架，保护根节点，修bug补全
+void BTreeDelete(BTNode*& bt, KeyType k) {
+	BTNodeDelete(bt, k);
+	if (bt->Keynum == 0 && bt->ptr[0]!=NULL) {
+		bt = bt->ptr[0];
+		bt->parent = NULL;
+	}
+	return;
+}
 //递归释放B树
 void DestroyBTree(BTree& bt) {
 	int i;
@@ -431,6 +436,26 @@ Status PrintBTree(BTree bt) {
 	DestroyQueue(L);
 	return OK;
 }
+
+//凹入表形式
+void PrintfBTree(BTree bt,int deep) {
+	int i,j=deep;
+	if (bt != NULL) {
+		while (j > 0) {
+			printf(" ");
+			j--;
+		}
+		printf("( ");
+		for (i = 1; i <= bt->Keynum; i++) {
+			printf("%d ", bt->key[i]);
+		}
+		printf(")\n");
+		for (i = 0; i <= bt->Keynum; i++) {
+			PrintfBTree(bt->ptr[i], 5 * deep);
+		}
+	}
+	return;
+}
 //测试B树功能函数
 void Test() {
 	int i = 10, j = 20;
@@ -456,10 +481,12 @@ void Test() {
 	}
 	printf("\n已经完成插入\n");
 	PrintBTree(bt);
+	PrintfBTree(bt,1);
 	while (1) {
 		printf("\n此时的B树\n");
-		while (bt->parent != NULL)bt = bt->parent;//实时更新最新的根节点
 		PrintBTree(bt);
+		printf("\n");
+		PrintfBTree(bt, 1);
 		printf("\n=============请输入你需要的操作=============\n");
 		printf("  1.初始化     2.插入    3.删除    \n");
 		printf("  4.清空释放   5.输出B树 6.查找节点 \n");
@@ -488,7 +515,7 @@ void Test() {
 		case 3: {
 			printf("输入所需删除的关键字:_____\b\b\b");
 			scanf_s("%d", &k);
-			BTNodeDelete(bt, k);
+			BTreeDelete(bt, k);
 			printf("\n删除成功\n");
 			break;
 		}
@@ -503,6 +530,7 @@ void Test() {
 		}
 		case 5: {
 			PrintBTree(bt);
+			PrintfBTree(bt,1);
 			break;
 		}
 		case 6: {
