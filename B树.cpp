@@ -9,18 +9,18 @@ Status InitBTree(BTree& bt) {
 	DestroyBTree(bt);
 	bt = (BTree)malloc(sizeof(BTNode));/*初始化要做全面，避免操作报错，特别是野指针*/
 	bt->Keynum = 0;
-	bt->parent = NULL;
-	bt->ptr[0] = NULL;
+	bt->parent = nullptr;
+	bt->ptr[0] = nullptr;
 	for (int i = 1; i < m; i++) {
 		bt->key[i] = inf;
-		bt->ptr[i] = NULL;
+		bt->ptr[i] = nullptr;
 	}
 	return OK;
 }
 
 //在结点p中查找关键字k的插入位置i
 int SearchBTNode(BTNode* p, KeyType k) {
-	if (p == NULL) {
+	if (p == nullptr) {
 		printf("输入结点为空，查找错误位置\n");
 		return 0;
 	}
@@ -36,9 +36,9 @@ int SearchBTNode(BTNode* p, KeyType k) {
 result SearchBTree(BTree bt, KeyType k) {
 
 	int Tag = 0, i = 0;
-	BTree p = bt, q = NULL;
+	BTree p = bt, q = nullptr;
 	result r;
-	if (bt == NULL) {
+	if (bt == nullptr) {
 		printf("该结点为空,查找错误\n");
 		return r;
 	}
@@ -66,7 +66,7 @@ result SearchBTree(BTree bt, KeyType k) {
 
 /*将关键字k和结点q分别插入到p->key[i-1]和p->ptr[i]中*/
 void InsertBTNode(BTNode*& p, int i, KeyType k, BTNode* q) {
-	if (p == NULL) {
+	if (p == nullptr) {
 		printf("该结点为空，无法插入\n");
 		return;
 	}
@@ -78,18 +78,18 @@ void InsertBTNode(BTNode*& p, int i, KeyType k, BTNode* q) {
 	p->key[i] = k;
 	p->ptr[i] = q;
 	p->Keynum++;//关键字数+1
-	if (q != NULL)q->parent = p;//修改父母结点的值
+	if (q != nullptr)q->parent = p;//修改父母结点的值
 	return;
 }
 
 //将p结点分裂成两个结点，前一半保留，后一半移入结点q
 void SplitBTNode(BTNode*& p, int s, BTNode*& q) {
-	if (p == NULL) {
+	if (p == nullptr) {
 		printf("p为空节点，无法分裂，已退出\n");
 		return;
 	}
 	int i;
-	if (q == NULL)
+	if (q == nullptr)
 		BTree q;
 	q = (BTree)malloc(sizeof(BTNode));//开空间
 	q->ptr[0] = p->ptr[s];//为了一致性先赋值
@@ -110,13 +110,13 @@ void SplitBTNode(BTNode*& p, int s, BTNode*& q) {
 
 //生成新的结点bt，原结点p和q为子树指针
 void NewRoot(BTNode*& bt, KeyType k, BTNode* p, BTNode* q) {
-	if (bt == NULL)
-		BTree bt = NULL;
+	if (bt == nullptr)
+		BTree bt = nullptr;
 	bt = (BTree)malloc(sizeof(BTNode));
 	InitBTree(bt);
 	bt->key[1] = k;
 	bt->Keynum = 1;
-	bt->parent = NULL;
+	bt->parent = nullptr;
 	bt->ptr[0] = p;
 	bt->ptr[1] = q;
 	if (p)p->parent = bt;
@@ -126,15 +126,15 @@ void NewRoot(BTNode*& bt, KeyType k, BTNode* p, BTNode* q) {
 
 /*在树bt的结点p的key[i]和key[i+1]插入k，若引起结点过大，则沿双亲分裂*/
 void InsertBTree(BTree& bt, int i, KeyType k, BTree p) {
-	if (bt == NULL) {
+	if (bt == nullptr) {
 		printf("头结点为空，插入错误\n");
 		return;
 	}
 	int finish_tag, newroot_tag, s;//设立分裂和新设头结点标志
-	BTree q = NULL;//分裂的指针
+	BTree q = nullptr;//分裂的指针
 	KeyType x;//存分裂上移的关键字k
-	if (p == NULL) {//如果插入的结点是空，则新设后退出
-		NewRoot(bt, k, NULL, NULL);
+	if (p == nullptr) {//如果插入的结点是空，则新设后退出
+		NewRoot(bt, k, nullptr, nullptr);
 		return;
 	}
 	x = k;
@@ -146,7 +146,7 @@ void InsertBTree(BTree& bt, int i, KeyType k, BTree p) {
 			s = (m + 1) / 2;//前半原置，后半新设，中间上移
 			SplitBTNode(p, s, q);//分裂
 			x = p->key[s];//存上移关键字
-			if (p->parent != NULL) {//查找上移的位序
+			if (p->parent != nullptr) {//查找上移的位序
 				p = p->parent;
 				i = SearchBTNode(p, x);
 			}
@@ -160,32 +160,32 @@ void InsertBTree(BTree& bt, int i, KeyType k, BTree p) {
 
 //从结点p删除key[i]和它的孩子指针ptr[i]
 void Remove(BTNode* p, int i) {
-	if (p == NULL)return;
+	if (p == nullptr)return;
 	for (int j = i + 1; j <= p->Keynum; j++) {/*后续元素前移代删除*/
 		p->key[j - 1] = p->key[j];
 		p->ptr[j - 1] = p->ptr[j];
 	}
 	p->key[p->Keynum] = inf;//删除防备
-	p->ptr[p->Keynum] = NULL;
+	p->ptr[p->Keynum] = nullptr;
 	p->Keynum--;
 	return;
 }
 
 /*查找被删关键字p->key[i](在非叶子结点中)的替代叶子结点（右子树值最小的关键字）*/
 void Successor(BTNode* p, int i) {
-	if (p == NULL) {
+	if (p == nullptr) {
 		printf("该查找被删结点为空，输入错误\n");
 		return;
 	}
 	BTree q;
-	for (q = p->ptr[i]; q->ptr[0] != NULL; q = q->ptr[0]);
+	for (q = p->ptr[i]; q->ptr[0] != nullptr; q = q->ptr[0]);
 	p->key[i] = q->key[1];//复制关键字
 	return;
 }
 
 /*将双亲结点p的最后一个关键字移入右结点q，将左结点aq最后一个关键字移入双亲结点p*/
 void MoveRight(BTNode* p, int i) {
-	if (p == NULL) {
+	if (p == nullptr) {
 		printf("该结点为空，右移错误，输入错误\n");
 		return;
 	}
@@ -198,6 +198,8 @@ void MoveRight(BTNode* p, int i) {
 	q->ptr[1] = q->ptr[0];
 	p->key[i] = aq->key[aq->Keynum]; /*将左结点aq最后一个关键字移入双亲结点p*/
 	q->ptr[0] = aq->ptr[aq->Keynum];/*最后一个孩子指针给右结点开始*/
+	if (q->ptr[0] != nullptr)
+		q->ptr[0]->parent = q;
 	aq->Keynum--;
 	q->Keynum++;
 	return;
@@ -205,7 +207,7 @@ void MoveRight(BTNode* p, int i) {
 
 /*将双亲结点p的第一个关键字移入左结点aq，将结点q的第一个关键字移入p*/
 void MoveLeft(BTNode* p, int i) {
-	if (p == NULL) {
+	if (p == nullptr) {
 		printf("该输入结点为空，左移错误\n");
 		return;
 	}
@@ -213,6 +215,8 @@ void MoveLeft(BTNode* p, int i) {
 	aq->Keynum++;
 	aq->key[aq->Keynum] = p->key[i];/*将双亲结点p的第一个关键字移入左结点aq*/
 	aq->ptr[aq->Keynum] = q->ptr[0];/*右结点q的第一个孩子放到左结点的最后一个孩子*/
+	if (aq->ptr[aq->Keynum] != nullptr)
+		aq->ptr[aq->Keynum]->parent = aq;
 	p->key[i] = q->key[1];//将q第一个放到p
 	q->ptr[0] = q->ptr[1];
 	Remove(q, 1);//删除q的第一个元素和孩子
@@ -222,7 +226,7 @@ void MoveLeft(BTNode* p, int i) {
 
 //将双亲p、右结点q合并入左结点aq，并调整p剩余关键字的位置
 void Combine(BTNode* p, int i) {
-	if (p == NULL) {
+	if (p == nullptr) {
 		printf("该操作结点为空，合并错误\n");
 		return;
 	}
@@ -230,26 +234,30 @@ void Combine(BTNode* p, int i) {
 	int num = aq->Keynum + 1;
 	aq->key[num] = p->key[i];//先把p移入
 	aq->ptr[num] = q->ptr[0];
+	if (aq->ptr[num] != nullptr)
+		aq->ptr[num]->parent = aq;
 	for (int j = 1; j <= q->Keynum; j++) {//再把右结点全部移入
 		num++;
 		aq->key[num] = q->key[j];
 		aq->ptr[num] = q->ptr[j];
+		if (aq->ptr[num] != nullptr)
+			aq->ptr[num]->parent = aq;
 	}
 	aq->Keynum = num;
 	Remove(p, i);//删掉p的第i个key
 	free(q);//释放空间
-	if (p->parent != NULL && p->Keynum < min)//检查自身关键字数目是否合规
+	if (p->parent != nullptr && p->Keynum < min)//检查自身关键字数目是否合规
 		Restore(p, i);
 	return;
 }
 
 //调整B树
 void Restore(BTree p, int i) {//本是p结点关键字不符合要求
-	if (p == NULL) {
+	if (p == nullptr) {
 		printf("该结点为空，调整错误\n");
 		return;
 	}
-	if (p->parent == NULL)return;
+	if (p->parent == nullptr)return;
 	int j = 0;
 	BTree q = p->parent;//先找其父母
 	while (q->ptr[j] != p)
@@ -274,23 +282,27 @@ void Restore(BTree p, int i) {//本是p结点关键字不符合要求
 
 //在p查找并删除k
 void BTNodeDelete(BTNode* p, KeyType k) {
-	if (p == NULL) {
+	if (p == nullptr) {
 		printf("该结点为空，无法删除\n");
 		return;
 	}
 	int i;
 	result r;
-	BTree q;
+	BTree q,check=nullptr;//检查删除结点，避免悬空指针
 	r = SearchBTree(p, k);//在树p中查找k
 	if (r.tag) {
 		q = r.pt;
+		if (q->parent != nullptr)//记录父节点
+			check = q->parent;
 		i = r.i;
-		if (q->ptr[i]) {/*非叶子结点删除则在右子树选择最小值替代，然后转化为叶子结点删除*/
+		if (q->ptr[i-1]!=nullptr) {/*非叶子结点删除则在右子树选择最小值替代，然后转化为叶子结点删除*/
 			Successor(q, i);
 			BTNodeDelete(q->ptr[i], q->key[i]);
 		}
 		else Remove(q, i);//叶子结点先删
-		if (q->parent != NULL && q->Keynum < min) {//关键字太少则调整
+		if (q->parent == nullptr || q->parent != check)/*如果为悬空指针，则肯定对不上，即跳出即可，因为是自下而上调整，所以直接跳出也无所谓*/
+			return;
+		if (q->parent != nullptr && q->Keynum < min) {//关键字太少则调整
 			Restore(q, i);
 		}
 	}
@@ -301,9 +313,11 @@ void BTNodeDelete(BTNode* p, KeyType k) {
 //删除框架，保护根节点，修bug补全
 void BTreeDelete(BTNode*& bt, KeyType k) {
 	BTNodeDelete(bt, k);
-	if (bt->Keynum == 0 && bt->ptr[0]!=NULL) {
+	if (bt->Keynum == 0 && bt->ptr[0]!=nullptr) {
+		BTree B = bt;
 		bt = bt->ptr[0];
-		bt->parent = NULL;
+		bt->parent = nullptr;
+		free(B);
 	}
 	return;
 }
@@ -316,13 +330,13 @@ void DestroyBTree(BTree& bt) {
 			DestroyBTree(t->ptr[i]);
 		free(t);
 	}
-	bt = NULL;
+	bt = nullptr;
 	return;
 }
 
 //查找节点是否存在
 void FindBTNode(BTree& bt, KeyType k) {
-	if (bt == NULL) {
+	if (bt == nullptr) {
 		printf("\n该结点为空,查找失败。\n");//空树
 		return;
 	}
@@ -345,7 +359,7 @@ Status InitQueue(LinkList& L) {
 	L = (LinkList)malloc(sizeof(LNode));//分配结点空间
 	if (!L)
 		return OVERFLOW;//失败
-	L->next = NULL;
+	L->next = nullptr;
 	return OK;
 }
 
@@ -354,7 +368,7 @@ LNode* CreateNode(BTNode* p) {
 	LinkList q = (LinkList)malloc(sizeof(LNode));/*创建一个链表队列结点*/
 	if (q) {
 		q->data = p;
-		q->next = NULL;
+		q->next = nullptr;
 	}
 	return q;
 }
@@ -426,7 +440,7 @@ Status Traverse(BTree bt, LinkList L, int newline, int sum) {
 
 //输出B树 
 Status PrintBTree(BTree bt) {
-	if (bt == NULL) {
+	if (bt == nullptr) {
 		printf("\n该树为空树\n");
 		return OK;
 	}
@@ -440,7 +454,7 @@ Status PrintBTree(BTree bt) {
 //凹入表形式
 void PrintfBTree(BTree bt,int deep) {
 	int i,j=deep;
-	if (bt != NULL) {
+	if (bt != nullptr) {
 		while (j > 0) {
 			printf(" ");
 			j--;
@@ -464,10 +478,10 @@ void Test() {
 	scanf_s("%d %d", &i, &j);
 	//printf("%d,%d\n", i, j);
 	result r;
-	BTree bt = NULL;
+	BTree bt = nullptr;
 	InitBTree(bt);
 	int* Key = (int*)malloc(sizeof(int) * i);
-	srand(time(NULL));
+	srand(time(nullptr));
 	for (int index = 0; index < i; index++) {
 		Key[index] = rand() % j;
 		printf("%d ", Key[index]);
